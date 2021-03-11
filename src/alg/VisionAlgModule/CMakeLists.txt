@@ -1,0 +1,2 @@
+add_subdirectory(detection)
+add_subdirectory(face)

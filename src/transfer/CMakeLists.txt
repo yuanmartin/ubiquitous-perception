@@ -1,0 +1,6 @@
+add_subdirectory(rpc)
+add_subdirectory(tcp)
+add_subdirectory(serial)
+add_subdirectory(http)
+add_subdirectory(rtsp)
+add_subdirectory(usb)

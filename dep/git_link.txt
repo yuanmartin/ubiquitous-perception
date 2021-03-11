@@ -1,0 +1,2 @@
+#依赖库源码包和编译脚本仓库地址
+https://gitee.com/china_sz_xx/ubiquitous-perception-dep.git
