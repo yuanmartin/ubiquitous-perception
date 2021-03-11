@@ -1,0 +1,15 @@
+prefix=/home/develop.proj/UbiquitousPerception/3rdparty
+platetype=arm
+libdir=${prefix}/lib_${platetype}
+includedir=${prefix}/include
+
+Name: caffe
+Description: Open Source Computer Vision Library
+Version: 1.0
+URL:
+Requires:
+Requires.private:
+Conflicts:
+Libs: -L${libdir} -lcaffe 
+Libs.private: 
+Cflags: -I${includedir}
