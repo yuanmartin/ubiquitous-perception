@@ -1,5 +1,4 @@
 prefix=/home/develop.proj/ubiquitous-perception/3rdparty
-
 platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
