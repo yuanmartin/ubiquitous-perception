@@ -1,0 +1,15 @@
+prefix=/home/develop.proj/ubiquitous-perception
+platetype=arm
+libdir=${prefix}/bin/lib
+includedir=${prefix}/include
+
+Name: UbiquitousPerception static lib
+Description: proj gen static libraries
+Version: 1.0.0
+URL:
+Requires:
+Requires.private:
+Conflicts:
+Libs: -L${libdir} -lhttpservice -lredisservice -lrpcservice -lipcameraservice -lserialservice -lusbcameraservice -ltcpservice -lsqliteservice
+Libs.private: -ldl -l
+Cflags: -I${includedir} 

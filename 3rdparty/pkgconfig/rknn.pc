@@ -3,13 +3,13 @@ platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: SQLite
-Description: SQL database engine
-Version: 3.32.3
+Name:rknn_api
+Description: the api lib of the rknn
+Version: 1.3.0
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lsqlite3
+Libs: -L${libdir} -lrknn_api
 Libs.private:
-Cflags: -I${includedir}
+Cflags: -I${includedir}/rknn

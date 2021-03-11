@@ -3,13 +3,13 @@ platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: caffe
+Name: OpenCV
 Description: Open Source Computer Vision Library
-Version: 1.0
+Version: 4.3.0
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lcaffe 
-Libs.private: 
+Libs: -L${libdir} -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc -lopencv_core
+Libs.private:
 Cflags: -I${includedir}

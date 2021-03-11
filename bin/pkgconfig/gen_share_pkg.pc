@@ -1,0 +1,15 @@
+prefix=/home/develop.proj/ubiquitous-perception
+platetype=arm
+libdir=${prefix}/bin/lib
+includedir=${prefix}/include
+
+Name: UbiquitousPerception lib
+Description: proj gen share libraries
+Version: 1.0.0
+URL:
+Requires:
+Requires.private:
+Conflicts:
+Libs: -L${libdir} 
+Libs.private: -ldl -l
+Cflags: -I${includedir} 

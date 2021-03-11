@@ -3,13 +3,13 @@ platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: SQLite
-Description: SQL database engine
-Version: 3.32.3
+Name: hiredis
+Description: Minimalistic C client library for hiredis
+Version: 0.14.1
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lsqlite3
+Libs: -L${libdir} -lhiredis
 Libs.private:
-Cflags: -I${includedir}
+Cflags: -I${includedir} -D_FILE_OFFSET_BITS=64

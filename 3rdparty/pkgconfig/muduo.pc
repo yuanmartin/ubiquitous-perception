@@ -3,13 +3,13 @@ platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: SQLite
-Description: SQL database engine
-Version: 3.32.3
+Name: muduo
+Description: Open Source Computer Vision Library
+Version: 1.0.0
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lsqlite3
-Libs.private:
+Libs: -L${libdir} -lmuduo_net -lmuduo_base
+Libs.private:  
 Cflags: -I${includedir}

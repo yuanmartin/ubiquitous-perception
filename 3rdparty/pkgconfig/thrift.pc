@@ -3,13 +3,13 @@ platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: SQLite
-Description: SQL database engine
-Version: 3.32.3
+Name: Thrift
+Description: Thrift C++ API
+Version: 0.10.0
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lsqlite3
+Libs: -L${libdir} -lthrift -lssl -lcrypto
 Libs.private:
 Cflags: -I${includedir}

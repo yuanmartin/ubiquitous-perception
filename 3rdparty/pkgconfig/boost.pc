@@ -1,15 +1,16 @@
 prefix=/home/develop.proj/ubiquitous-perception/3rdparty
+
 platetype=arm
 libdir=${prefix}/lib_${platetype}
 includedir=${prefix}/include
 
-Name: SQLite
-Description: SQL database engine
-Version: 3.32.3
+Name: Boost
+Description: Open Source Computer Vision Library
+Version: 1.66.0
 URL:
 Requires:
 Requires.private:
 Conflicts:
-Libs: -L${libdir} -lsqlite3
+Libs: -L${libdir} -lboost_system -lboost_regex -ldl
 Libs.private:
 Cflags: -I${includedir}
