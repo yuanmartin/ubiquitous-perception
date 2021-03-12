@@ -230,7 +230,7 @@ void CCommSafeDetect::ProResultMsg(const string& strIp,const cv::Mat& img,const 
 
     if(bAlarm)
     {
-        system("aplay -Dplughw:0,0 -c 2 -r 44100 -f S16_LE /mnt/media/nohelmet.wav");
+        system("aplay -Dplughw:0,0 -c 2 -r 44100 -f S16_LE ./resource/nohelmet.wav");
     }
 }
 
