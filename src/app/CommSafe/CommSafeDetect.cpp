@@ -17,8 +17,8 @@ const int s32QueueSize = 20;
 bool IsOverlap(box father, box child)
 {
     bool bRet = false;
-    int x1 = child.x + child.w / 2;
-    int y1 = child.y + child.h;
+    float x1 = child.x + child.w / 2;
+    float y1 = child.y + child.h;
     if (x1 > father.x && x1 < (father.x + father.w) && y1 > father.y && y1 < (father.y + father.h)) 
     {
         return true;
