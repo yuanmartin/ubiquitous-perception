@@ -30,7 +30,7 @@ bool IsOverlap(box father, box child)
     return bRet;
 }
 
-bool DetectInference(cv::Mat& img,const detection* dets,const int& total,const int& classes,const std::string& strTask,vector<box>& vecBox)
+bool DetectInference(cv::Mat& img,const vector<detection>& dets,const int& total,const int& classes,const std::string& strTask,vector<box>& vecBox)
 {
     bool bHaveTarget = false;
 	for(int i = 0;i < total;i++)
@@ -86,7 +86,7 @@ void CCommSafeDetect::Init(const MsgBusShrPtr& ptrMsgBus,const Json& jTaskCfg,co
     
         //算法结果订阅(只需一次)
         string&& strCaclResultTopic = AlgResultTopic(string(jTaskCfg[strAttriType]),string(jTaskCfg[strAttriIdx]));
-        auto caclResultCB = [this](const string& strIp,const cv::Mat& img,const detection* dets,const int& total,const int& classes)->void {ProResultMsg(strIp,img,dets,total,classes);};
+        auto caclResultCB = [this](const string& strIp,const cv::Mat& img,const vector<detection>& dets,const int& total,const int& classes)->void {ProResultMsg(strIp,img,dets,total,classes);};
         ptrMsgBus->Attach(move(caclResultCB),strCaclResultTopic);
     }
 
@@ -101,7 +101,7 @@ void CCommSafeDetect::Init(const MsgBusShrPtr& ptrMsgBus,const Json& jTaskCfg,co
     ptrMsgBus->SendReq<bool,const Json&,const Json&,const vector<Json>&>(jTaskCfg,jAlgCfg,vecDataSrc,strTopic);
 }
 
-void CCommSafeDetect::ProResultMsg(const string& strIp,const cv::Mat& img,const detection* dets,const int& total,const int& classes)
+void CCommSafeDetect::ProResultMsg(const string& strIp,const cv::Mat& img,const vector<detection>& dets,const int& total,const int& classes)
 {
     CLockType lock(&m_CfgMutex);
 

@@ -23,7 +23,7 @@ namespace COMMSAFE_APP
         void ReportResult(std::vector<Json>& vecResult,const int& s32StartIdx,const int& s32BatchSize);
 
     private:
-        void ProResultMsg(const std::string& strIp,const cv::Mat& img,const detection* dets,const int& total,const int& classes);
+        void ProResultMsg(const std::string& strIp,const cv::Mat& img,const vector<detection>& dets,const int& total,const int& classes);
 
     private:
         CMutexType m_CfgMutex;

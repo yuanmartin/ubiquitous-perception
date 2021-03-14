@@ -23,20 +23,6 @@ const float fConstIOUThresh = 0.4;
 const float fConstObjThresh = 0.4;             
 const float fConstDrawThresh = 0.4;   
 
-void free_detections(detection *dets, int n)
-{
-	if(!dets)
-	{
-		return;
-	}
-	
-    for(int i = 0; i < n; ++i)
-	{
-        free(dets[i].prob);
-    }
-    free(dets);
-}
-
 float overlap(float x1,float w1,float x2,float w2)
 {
 	float l1=x1-w1/2;
@@ -69,9 +55,9 @@ float box_iou(box a, box b)
     return box_intersection(a, b)/box_union(a, b);
 }
 
-int do_nms_sort(detection *dets, int total, int classes, float fIOUThresh, float fDrawThresh)
+int do_nms_sort(vector<detection>& dets, int total, int classes, float fIOUThresh, float fDrawThresh)
 {
-	detection * detbuf = new detection[total];
+	vector<detection> detbuf(total,detection(classes));
 	int num = 0;
 	int i, j;
 	//将检测结果归类，取最大值下标表示类别
@@ -93,9 +79,7 @@ int do_nms_sort(detection *dets, int total, int classes, float fIOUThresh, float
 		}
 	}
 	
-	memset(dets, 0, total * sizeof(detection));
 	total = 0;
-
 	for (i = 0; i < num; i ++)
 	{
 		if (detbuf[i].prob[detbuf[i].sort_class] == 0) 
@@ -130,7 +114,6 @@ int do_nms_sort(detection *dets, int total, int classes, float fIOUThresh, float
 		}
 	}
 
-	delete[] detbuf;
 	return total;
 }
 
@@ -144,7 +127,7 @@ box get_yolo_box(float x, float y, float w, float h, float *biases, int n,int i,
 	return b;
 }
 
-void get_network_boxes(float *predictions, int netw, int neth, int GRID, int *masks, float *anchors, int box_off, int classes, float obj_thresh, detection *dets)
+void get_network_boxes(float *predictions, int netw, int neth, int GRID, int *masks, float *anchors, int box_off, int classes, float obj_thresh, vector<detection>& dets)
 {
 	int lw = GRID;    //80
 	int lh = GRID;
@@ -180,7 +163,6 @@ void get_network_boxes(float *predictions, int netw, int neth, int GRID, int *ma
 			if (objectness > obj_thresh)
 			{
 				dets[count].objectness = objectness;
-				dets[count].classes = classes;
 				dets[count].bbox = get_yolo_box(predictions[offset], predictions[offset + 1], predictions[offset + 2], predictions[offset + 3],
 					anchors, masks[a], col, row, lw, lh, netw, neth);
 				for (int c = 0; c < classes; c++)
@@ -196,14 +178,8 @@ void get_network_boxes(float *predictions, int netw, int neth, int GRID, int *ma
 }
 
 //模型输出转换
-static int outputs_transform(rknn_output rknn_outputs[], int net_width, int net_height,int classes,float obj_thresh,float iou_thresh,detection** dets)
+static int outputs_transform(rknn_output rknn_outputs[], int net_width, int net_height,int classes,float obj_thresh,float iou_thresh,vector<detection>& dets)
 {
-	*dets = (detection*) calloc(nboxes_total,sizeof(detection));
-	for(int i = 0; i < nboxes_total; ++i)
-	{
-		(*dets)[i].prob = (float*) calloc(classes,sizeof(float));
-	}
-	
     float *output_0 = (float *)rknn_outputs[1].buf;  //80
 	float *output_1 = (float *)rknn_outputs[2].buf;  //40
 	float *output_2 = (float *)rknn_outputs[3].buf;  //20*20*3*31
@@ -213,12 +189,12 @@ static int outputs_transform(rknn_output rknn_outputs[], int net_width, int net_
 	float anchors[18] = {10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326};
 
 	//输出xywh均在0-1范围内
-	get_network_boxes(output_0, net_width, net_height, GRID0, masks_0, anchors, 0, classes,obj_thresh,*dets);
-	get_network_boxes(output_1, net_width, net_height, GRID1, masks_1, anchors, nboxes_0,classes,obj_thresh, *dets);
-	get_network_boxes(output_2, net_width, net_height, GRID2, masks_2, anchors, nboxes_0 + nboxes_1,classes,obj_thresh,*dets);
-	
+	get_network_boxes(output_0, net_width, net_height, GRID0, masks_0, anchors, 0, classes,obj_thresh,dets);
+	get_network_boxes(output_1, net_width, net_height, GRID1, masks_1, anchors, nboxes_0,classes,obj_thresh, dets);
+	get_network_boxes(output_2, net_width, net_height, GRID2, masks_2, anchors, nboxes_0 + nboxes_1,classes,obj_thresh,dets);
+
     //非极大值抑制
-    return  do_nms_sort(*dets, nboxes_total, classes, iou_thresh,fConstDrawThresh);
+    return  do_nms_sort(dets, nboxes_total, classes, iou_thresh,fConstDrawThresh);
 }
 
 bool CDetectAlg::Init(const MsgBusShrPtr& ptrMsgBus,const Json& taskCfg,const Json& algCfg,const Json& DataSrcCfg)
@@ -307,29 +283,28 @@ void CDetectAlg::ProcMat(const string& strIp,const string& strCamCode,const cv::
 			}
 
 			//output transfor
-			detection* dets = nullptr;	
-			int nboxes_left = outputs_transform(outputs, s32ConstNetWidth, s32ConstNetHeight,s32ConstClasses,fConstObjThresh,fConstIOUThresh,&dets);
-			if(0 < nboxes_left && nullptr != dets)
+			vector<detection> vecDetection(nboxes_total,detection(s32ConstClasses));
+			int nboxes_left = outputs_transform(outputs, s32ConstNetWidth, s32ConstNetHeight,s32ConstClasses,fConstObjThresh,fConstIOUThresh,vecDetection);
+			if(0 < nboxes_left)
 			{
 				if(i > 0)
 				{
 					for(int k = 0; k < nboxes_left; k ++)
 					{
-						box inBox = dets[k].bbox;
-						GetOriginRect(inBox, transPts[i-1], s32ConstNetWidth, srcImg.cols, dets[k].bbox);
+						box inBox = vecDetection[k].bbox;
+						GetOriginRect(inBox, transPts[i-1], s32ConstNetWidth, srcImg.cols, vecDetection[k].bbox);
 					}
 				}
 				
 				CLockType lock(&m_mapReportTopicMutex);
 				for(auto& valTopic : m_mapResultReportTopic)
 				{
-					m_ptrMsgBus->SendReq<void,const std::string&,const cv::Mat&,const detection*,const int&,const int&>(strIp,srcImg,dets,nboxes_left,s32ConstClasses,valTopic.first);
+					m_ptrMsgBus->SendReq<void,const std::string&,const cv::Mat&,const vector<detection>&,const int&,const int&>(strIp,srcImg,vecDetection,nboxes_left,s32ConstClasses,valTopic.first);
 				}
 			}
 
 			//release resource
 			rknn_outputs_release(valModel.second, s32ConstOutputSize,outputs);
-			free_detections(dets,nboxes_total);
 		}
 		i++;
 	}

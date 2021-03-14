@@ -16,31 +16,103 @@
 
 #include "rknn/rknn_api.h"
 #include "boost/BoostFun.h"
+#include "comm/CommDefine.h"
 
 const int GRID0 = 80;
 const int GRID1 = 40;
 const int GRID2 = 20;
 
-const int nanchor = 3;                        //n anchor per yolo layer
+const int nanchor = 3;                        
 const int nboxes_0 = GRID0 * GRID0 * nanchor;
 const int nboxes_1 = GRID1 * GRID1 * nanchor;
 const int nboxes_2 = GRID2 * GRID2 * nanchor;
 const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 
 #pragma pack(push, 1)  
-    typedef struct
+    class box
     {
-        float x,y,w,h;
-    }box;
+	public:
+		box(){}
+		~box(){}
+		box(const box& obj)
+		{
+			x = obj.x;
+			y = obj.y;
+			w = obj.w;
+			h = obj.h;
+		}
+		box& operator=(const box& obj)
+		{
+			x = obj.x;
+			y = obj.y;
+			w = obj.w;
+			h = obj.h;
+		}
+    	float x,y,w,h;
+    };
 
-    typedef struct detection
+    class detection
     {
+	public:
+		detection(int s32Classes) : 
+		classes(s32Classes),
+		sort_class(0),
+		objectness(0.0),
+		prob(nullptr)
+		{
+			new_prob();
+		}
+
+		detection(const detection& obj)
+		{
+			bbox = obj.bbox;
+			classes = obj.classes;
+			sort_class = obj.sort_class;
+			objectness = obj.objectness;
+			copy_prob(obj);
+		}
+
+		detection& operator=(const detection& obj)
+		{
+			bbox = obj.bbox;
+			classes = obj.classes;
+			sort_class = obj.sort_class;
+			objectness = obj.objectness;
+			copy_prob(obj);
+		}
+
+		~detection()
+		{
+			delete_prob();
+		}
+
+		void new_prob()
+		{
+			if(0 >= classes)
+			{
+				classes = 1;
+			}
+			prob = new float[classes];
+			memset((char*)prob,0,classes * nFloatLen);
+		}
+
+		void copy_prob(const detection& obj)
+		{
+			new_prob();
+			memcpy((char*)prob,(char*)obj.prob,classes * nFloatLen);
+		}
+
+		void delete_prob()
+		{
+			delete [] prob;
+		}
+
         box bbox;
         int classes;
-        float *prob;
-        float objectness;
-        int sort_class;
-    } detection;
+		int sort_class;
+        float objectness; 
+		float *prob;
+    };
 #pragma pack(pop)
 
 /*模型文件加载*/
