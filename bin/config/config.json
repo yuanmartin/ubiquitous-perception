@@ -82,7 +82,7 @@
 				[
 					{"transfer_id":"rtspcli1","desc":"video stream"}
 				],
-				"task_lst":"0|1|2|3",
+				"task_lst":"0|23",
 				"start_time":"00:00:00",
 				"end_time":"23:59:59",
 				"idx":"1"
