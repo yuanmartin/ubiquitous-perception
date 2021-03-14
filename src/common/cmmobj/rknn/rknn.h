@@ -44,7 +44,7 @@ const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 			copy(obj);
 		}
 		float x,y,w,h;
-		
+
 	private:
 		void copy(const box& obj)
 		{
@@ -53,7 +53,6 @@ const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 			w = obj.w;
 			h = obj.h;
 		}
-    	
     };
 
     class detection
