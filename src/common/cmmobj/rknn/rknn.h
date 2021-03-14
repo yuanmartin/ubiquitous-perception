@@ -36,19 +36,24 @@ const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 		~box(){}
 		box(const box& obj)
 		{
-			x = obj.x;
-			y = obj.y;
-			w = obj.w;
-			h = obj.h;
+			copy(obj);
 		}
+
 		box& operator=(const box& obj)
+		{
+			copy(obj);
+		}
+		float x,y,w,h;
+		
+	private:
+		void copy(const box& obj)
 		{
 			x = obj.x;
 			y = obj.y;
 			w = obj.w;
 			h = obj.h;
 		}
-    	float x,y,w,h;
+    	
     };
 
     class detection
@@ -65,25 +70,33 @@ const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 
 		detection(const detection& obj)
 		{
-			bbox = obj.bbox;
-			classes = obj.classes;
-			sort_class = obj.sort_class;
-			objectness = obj.objectness;
-			copy_prob(obj);
+			copy(obj);
 		}
 
 		detection& operator=(const detection& obj)
 		{
-			bbox = obj.bbox;
-			classes = obj.classes;
-			sort_class = obj.sort_class;
-			objectness = obj.objectness;
-			copy_prob(obj);
+			copy(obj);
 		}
 
 		~detection()
 		{
 			delete_prob();
+		}
+		
+		box bbox;
+        int classes;
+		int sort_class;
+        float objectness; 
+		float *prob;
+
+	private:
+		void copy(const detection& obj)
+		{
+			bbox = obj.bbox;
+			classes = obj.classes;
+			sort_class = obj.sort_class;
+			objectness = obj.objectness;
+			copy_prob(obj);
 		}
 
 		void new_prob()
@@ -106,12 +119,6 @@ const int nboxes_total = nboxes_0 + nboxes_1 + nboxes_2;
 		{
 			delete [] prob;
 		}
-
-        box bbox;
-        int classes;
-		int sort_class;
-        float objectness; 
-		float *prob;
     };
 #pragma pack(pop)
 
